@@ -5,23 +5,20 @@
   gap: 16px;
 }
 
-@media (min-width: 900px) {
+/* Modern media query range notation (required by stylelint config) */
+@media (width >= 900px) {
   .step-cards-container {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* Card base styling */
+/* Card base styling + unified body typography */
 .step-card {
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 16px;
   background: #fff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
-}
-
-/* Typography: one consistent size for all body text */
-.step-card {
   font-size: 14px;
   line-height: 1.4;
 }
@@ -34,14 +31,12 @@
 
 /*
   Make cards feel more horizontal:
-  - meta area uses a compact grid
-  - reduces vertical stacking of labeled lines
+  meta area uses a compact label/value grid
 */
 .step-card-meta {
   display: grid;
   grid-template-columns: 140px 1fr;
-  column-gap: 12px;
-  row-gap: 6px;
+  gap: 6px 12px; /* row-gap column-gap shorthand */
   margin: 10px 0 12px;
 }
 
@@ -66,44 +61,4 @@
 
 .step-card-links-label {
   margin: 0;
-}
-
-.step-card-links-list {
-  margin: 8px 0 0;
-  padding-left: 18px;
-}
-
-.step-card-links-list li {
-  margin: 4px 0 0;
-}
-
-/* Accordion styling */
-.step-card-accordion {
-  margin: 12px 0 0;
-  border-top: 1px solid #eee;
-  padding-top: 10px;
-}
-
-.step-card-accordion-summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #333;
-}
-
-.step-card-accordion-summary::-webkit-details-marker {
-  margin-right: 6px;
-}
-
-.step-card-accordion-content {
-  margin: 8px 0 0;
-}
-
-/* Detail steps bullets (plain text lines -> list items) */
-.step-card-steps {
-  margin: 8px 0 0;
-  padding-left: 18px;
-}
-
-.step-card-steps li {
-  margin: 4px 0 0;
 }
