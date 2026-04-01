@@ -27,25 +27,25 @@ export default async function decorate(block) {
     const expiration = item.expiration || '';
     const description = item.description || '';
 
-   // Links: support either an array of { label, url } objects or a single URL string
-let linksHtml = '';
-const { links } = item;
+    // Links: support either an array of { label, url } objects or a single URL string
+    let linksHtml = '';
+    const { links } = item;
 
-if (Array.isArray(links) && links.length > 0) {
-  const listItems = links
-    .map((link) => {
-      const url = link?.url || '';
-      const label = link?.label || url || 'Learn more';
-      if (!url) return '';
-      return `<li><a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
-    })
-    .filter(Boolean)
-    .join('');
+    if (Array.isArray(links) && links.length > 0) {
+      const listItems = links
+        .map((link) => {
+          const url = link?.url || '';
+          const label = link?.label || url || 'Learn more';
+          if (!url) return '';
+          return `<li><a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
+        })
+        .filter(Boolean)
+        .join('');
 
-  linksHtml = listItems ? `<ul class="step-card-links">${listItems}</ul>` : '';
-} else if (typeof links === 'string' && links) {
-  linksHtml = `<p class="step-card-links"><a href="${links}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`;
-}
+      linksHtml = listItems ? `<ul class="step-card-links">${listItems}</ul>` : '';
+    } else if (typeof links === 'string' && links) {
+      linksHtml = `<p class="step-card-links"><a href="${links}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`;
+    }
 
     card.innerHTML = `
       <h3 class="step-card-title">${title}</h3>
@@ -54,3 +54,16 @@ if (Array.isArray(links) && links.length > 0) {
       ${phase ? `<p class="step-card-phase"><strong>Phase:</strong> ${phase}</p>` : ''}
       ${condition ? `<p class="step-card-condition"><strong>Condition:</strong> ${condition}</p>` : ''}
       ${fee ? `<p class="step-card-fee"><strong>Fee:</strong> ${fee}</p>` : ''}
+      ${expiration ? `<p class="step-card-expiration"><strong>Expiration:</strong> ${expiration}</p>` : ''}
+
+      ${detailSteps ? `<p class="step-card-detail"><strong>Detailed steps:</strong> ${detailSteps}</p>` : ''}
+      ${description ? `<p class="step-card-desc">${description}</p>` : ''}
+
+      ${linksHtml}
+    `;
+
+    container.appendChild(card);
+  });
+
+  block.appendChild(container);
+}
