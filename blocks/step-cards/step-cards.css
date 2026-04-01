@@ -1,0 +1,24 @@
+.step-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.step-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.step-card-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.step-card-phase,
+.step-card-desc {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
