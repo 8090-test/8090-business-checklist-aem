@@ -27,26 +27,25 @@ export default async function decorate(block) {
     const expiration = item.expiration || '';
     const description = item.description || '';
 
-    // Links: expect either an array or a single URL
-    let linksHtml = '';
-    if (Array.isArray(item.links) && item.links.length > 0) {
-      linksHtml = `
-        <ul class="step-card-links">
-          ${item.links
-            .map(
-              (link) =>
-                `<li><a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label || link.url}</a></li>`,
-            )
-            .join('')}
-        </ul>
-      `;
-    } else if (typeof item.links === 'string') {
-      linksHtml = `
-        <p class="step-card-links">
-          <a href="${item.links}" target="_blank" rel="noopener noreferrer">Learn more</a>
-        </p>
-      `;
-    }
+   // Links: support either an array of { label, url } objects or a single URL string
+let linksHtml = '';
+const { links } = item;
+
+if (Array.isArray(links) && links.length > 0) {
+  const listItems = links
+    .map((link) => {
+      const url = link?.url || '';
+      const label = link?.label || url || 'Learn more';
+      if (!url) return '';
+      return `<li><a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
+    })
+    .filter(Boolean)
+    .join('');
+
+  linksHtml = listItems ? `<ul class="step-card-links">${listItems}</ul>` : '';
+} else if (typeof links === 'string' && links) {
+  linksHtml = `<p class="step-card-links"><a href="${links}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`;
+}
 
     card.innerHTML = `
       <h3 class="step-card-title">${title}</h3>
