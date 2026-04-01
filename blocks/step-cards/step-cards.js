@@ -7,9 +7,10 @@ function createEl(tag, className, text) {
   return el;
 }
 
-function addLabeledRow(parent, label, value, valueClass) {
+function addLabeledRow(parent, label, value) {
   if (!value) return;
-  const row = createEl('p', valueClass || '');
+
+  const row = createEl('p');
   const strong = document.createElement('strong');
   strong.textContent = `${label}:`;
   row.appendChild(strong);
@@ -17,15 +18,15 @@ function addLabeledRow(parent, label, value, valueClass) {
   parent.appendChild(row);
 }
 
-function buildDetailStepsAccordion(detailStepsText) {
-  if (!detailStepsText) return null;
+function buildDetailStepsAccordion(text) {
+  if (!text) return null;
 
-  const lines = String(detailStepsText)
+  const lines = String(text)
     .split(/\r?\n/)
     .map((l) => l.trim())
-    .filter((l) => l.length > 0);
+    .filter(Boolean);
 
-  if (lines.length === 0) return null;
+  if (!lines.length) return null;
 
   const details = createEl('details', 'step-card-accordion');
   const summary = createEl('summary', 'step-card-accordion-summary', 'Detailed steps');
@@ -35,8 +36,7 @@ function buildDetailStepsAccordion(detailStepsText) {
   const ul = createEl('ul', 'step-card-steps');
 
   lines.forEach((line) => {
-    const li = document.createElement('li');
-    li.textContent = line;
+    const li = createEl('li', null, line);
     ul.appendChild(li);
   });
 
@@ -46,96 +46,58 @@ function buildDetailStepsAccordion(detailStepsText) {
   return details;
 }
 
-function normalizeLinks(linksRaw) {
-  if (!linksRaw) return [];
+function normalizeLinks(raw) {
+  if (!raw) return [];
 
-  // Array input (objects or strings)
-  if (Array.isArray(linksRaw)) {
-    return linksRaw
-      .map((entry) => {
-        if (!entry) return null;
-
-        if (typeof entry === 'object') {
-          const url = entry.url ? String(entry.url).trim() : '';
-          const label = entry.label ? String(entry.label).trim() : '';
-          if (!url) return null;
-          return { label: label || url, url };
+  if (Array.isArray(raw)) {
+    return raw
+      .map((item) => {
+        if (typeof item === 'object' && item.url) {
+          return {
+            label: item.label || item.url,
+            url: item.url,
+          };
         }
-
-        if (typeof entry === 'string') {
-          const url = entry.trim();
-          if (!url) return null;
-          return { label: url, url };
+        if (typeof item === 'string') {
+          return { label: item, url: item };
         }
-
         return null;
       })
       .filter(Boolean);
   }
 
-  // Single string input (best-effort parsing)
-  if (typeof linksRaw === 'string') {
-    const text = linksRaw.trim();
-    if (!text) return [];
-
-    const lines = text
+  if (typeof raw === 'string') {
+    return raw
       .split(/\r?\n/)
-      .map((l) => l.trim())
-      .filter(Boolean);
-
-    return lines
-      .map((line) => {
-        const pipeParts = line.split('|').map((p) => p.trim());
-        if (pipeParts.length === 2) {
-          const label = pipeParts[0];
-          const url = pipeParts[1];
-          if (!url) return null;
-          return { label: label || url, url };
-        }
-
-        const dashMatch = line.match(/^(.*)\s+-\s+(https?:\/\/\S+)$/i);
-        if (dashMatch) {
-          const label = dashMatch[1].trim();
-          const url = dashMatch[2].trim();
-          if (!url) return null;
-          return { label: label || url, url };
-        }
-
-        if (/^https?:\/\/\S+$/i.test(line)) {
-          return { label: line, url: line };
-        }
-
-        return null;
-      })
-      .filter(Boolean);
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((url) => ({ label: url, url }));
   }
 
   return [];
 }
 
-function buildLinksSection(linksRaw) {
-  const links = normalizeLinks(linksRaw);
+function buildLinksSection(rawLinks) {
+  const links = normalizeLinks(rawLinks);
   if (!links.length) return null;
 
   const wrapper = createEl('div', 'step-card-links');
 
-  const labelP = createEl('p', 'step-card-links-label');
+  const label = createEl('p', 'step-card-links-label');
   const strong = document.createElement('strong');
   strong.textContent = 'Links:';
-  labelP.appendChild(strong);
-  wrapper.appendChild(labelP);
+  label.appendChild(strong);
+  wrapper.appendChild(label);
 
   const ul = createEl('ul', 'step-card-links-list');
 
   links.forEach(({ label: linkLabel, url }) => {
     const li = document.createElement('li');
     const a = document.createElement('a');
-
     a.href = url;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.textContent = linkLabel || url;
-
+    a.textContent = linkLabel;
     li.appendChild(a);
     ul.appendChild(li);
   });
@@ -148,7 +110,7 @@ export default async function decorate(block) {
   const response = await fetch('/content/step-cards.json');
 
   if (!response.ok) {
-    block.innerHTML = `<p>Could not load step cards (HTTP ${response.status})</p>`;
+    block.textContent = `Could not load step cards (HTTP ${response.status})`;
     return;
   }
 
@@ -156,36 +118,42 @@ export default async function decorate(block) {
   const items = Array.isArray(json.data) ? json.data : [];
 
   block.textContent = '';
-
   const container = createEl('div', 'step-cards-container');
 
   items.forEach((item) => {
     const card = createEl('div', 'step-card');
 
-    const title = item.title || item.name || 'Untitled step';
-    const agency = item.agency || '';
-    const phase = item.phase || '';
-    const condition = item.condition || '';
-    const fee = item.fee || '';
-    const expiration = item.expiration || '';
-    const description = item.description || '';
-    const detailSteps = item.detailSteps || '';
+    card.appendChild(
+      createEl('h3', 'step-card-title', item.title || 'Untitled step'),
+    );
 
-    // Title
-    card.appendChild(createEl('h3', 'step-card-title', title));
-
-    // Meta rows (Agency right after title, then Phase, etc.)
     const meta = createEl('div', 'step-card-meta');
-    addLabeledRow(meta, 'Agency', agency, 'step-card-agency');
-    addLabeledRow(meta, 'Phase', phase, 'step-card-phase');
-    addLabeledRow(meta, 'Condition', condition, 'step-card-condition');
-    addLabeledRow(meta, 'Fee', fee, 'step-card-fee');
-    addLabeledRow(meta, 'Expiration', expiration, 'step-card-expiration');
+    addLabeledRow(meta, 'Agency', item.agency);
+    addLabeledRow(meta, 'Phase', item.phase);
+    addLabeledRow(meta, 'Condition', item.condition);
+    addLabeledRow(meta, 'Fee', item.fee);
+    addLabeledRow(meta, 'Expiration', item.expiration);
 
-    if (meta.childNodes.length > 0) {
+    if (meta.childNodes.length) {
       card.appendChild(meta);
     }
 
-    if (description) {
-      card.appendChild(createEl('p', 'step-card-desc', description));
+    if (item.description) {
+      card.appendChild(createEl('p', 'step-card-desc', item.description));
     }
+
+    const accordion = buildDetailStepsAccordion(item.detailSteps);
+    if (accordion) {
+      card.appendChild(accordion);
+    }
+
+    const linksSection = buildLinksSection(item.links);
+    if (linksSection) {
+      card.appendChild(linksSection);
+    }
+
+    container.appendChild(card);
+  });
+
+  block.appendChild(container);
+}
