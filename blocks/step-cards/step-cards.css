@@ -1,4 +1,4 @@
-/* Layout: cards in two columns on wider screens, one column on small screens */
+/* Layout: 1 column on small screens, 2 columns on wider screens */
 .step-cards-container {
   display: grid;
   grid-template-columns: 1fr;
@@ -32,7 +32,11 @@
   font-size: 18px;
 }
 
-/* Reduce vertical stacking: put label/value lines into a compact grid */
+/*
+  Make cards feel more horizontal:
+  - meta area uses a compact grid
+  - reduces vertical stacking of labeled lines
+*/
 .step-card-meta {
   display: grid;
   grid-template-columns: 140px 1fr;
@@ -41,12 +45,10 @@
   margin: 10px 0 12px;
 }
 
-/* Make all meta rows consistent */
 .step-card-meta p {
   margin: 0;
 }
 
-/* Labels: consistent and subtle */
 .step-card-meta strong {
   font-weight: 600;
   color: #444;
@@ -57,13 +59,21 @@
   margin: 10px 0 0;
 }
 
-/* Links list: compact */
+/* Links section */
 .step-card-links {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
+}
+
+.step-card-links-label {
+  margin: 0;
+}
+
+.step-card-links-list {
+  margin: 8px 0 0;
   padding-left: 18px;
 }
 
-.step-card-links li {
+.step-card-links-list li {
   margin: 4px 0 0;
 }
 
@@ -80,7 +90,6 @@
   color: #333;
 }
 
-/* Reduce default marker spacing slightly */
 .step-card-accordion-summary::-webkit-details-marker {
   margin-right: 6px;
 }
@@ -88,4 +97,13 @@
 .step-card-accordion-content {
   margin: 8px 0 0;
 }
-``
+
+/* Detail steps bullets (plain text lines -> list items) */
+.step-card-steps {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.step-card-steps li {
+  margin: 4px 0 0;
+}
