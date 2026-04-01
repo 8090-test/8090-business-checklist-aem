@@ -1,9 +1,17 @@
+/* Layout: cards in two columns on wider screens, one column on small screens */
 .step-cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
+@media (min-width: 900px) {
+  .step-cards-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Card base styling */
 .step-card {
   border: 1px solid #ddd;
   border-radius: 12px;
@@ -12,13 +20,72 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
 }
 
+/* Typography: one consistent size for all body text */
+.step-card {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Keep title styling distinct */
 .step-card-title {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-size: 18px;
 }
 
-.step-card-phase,
-.step-card-desc {
-  margin: 8px 0 0;
-  font-size: 14px;
+/* Reduce vertical stacking: put label/value lines into a compact grid */
+.step-card-meta {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  column-gap: 12px;
+  row-gap: 6px;
+  margin: 10px 0 12px;
 }
+
+/* Make all meta rows consistent */
+.step-card-meta p {
+  margin: 0;
+}
+
+/* Labels: consistent and subtle */
+.step-card-meta strong {
+  font-weight: 600;
+  color: #444;
+}
+
+/* Description spacing */
+.step-card-desc {
+  margin: 10px 0 0;
+}
+
+/* Links list: compact */
+.step-card-links {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.step-card-links li {
+  margin: 4px 0 0;
+}
+
+/* Accordion styling */
+.step-card-accordion {
+  margin: 12px 0 0;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.step-card-accordion-summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Reduce default marker spacing slightly */
+.step-card-accordion-summary::-webkit-details-marker {
+  margin-right: 6px;
+}
+
+.step-card-accordion-content {
+  margin: 8px 0 0;
+}
+``
